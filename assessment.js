@@ -3,14 +3,14 @@
     const userNameInput = document.getElementById('user-name');
     const assessmentButton = document.getElementById('assessment');
     const resultDivided = document.getElementById('result-area');
-    const tweetDivided = document.getElementById('tweet-area')
-    
+    const tweetDivided = document.getElementById('tweet-area');
+
     /**
-     * 指定した要素の子どもを全て削除する
-     * @param {HTMLElment} element HTMLの要素
-     */
+    * 指定した要素の子どもを全て除去する
+    * @param {HTMLElement} element HTMLの要素
+    */
     function removeAllChildren(element) {
-        while (element.firstChild) { // 子どもの要素があるかぎり削除
+        while (element.firstChild) { // 子どもの要素があるかぎり除去
             element.removeChild(element.firstChild);
         }
     }
@@ -20,6 +20,7 @@
         if (userName.length === 0) { // 名前が空の時は処理を終了する
             return;
         }
+
         // 診断結果表示エリアの作成
         removeAllChildren(resultDivided);
         const header = document.createElement('h3');
@@ -31,7 +32,7 @@
         paragraph.innerText = result;
         resultDivided.appendChild(paragraph);
 
-        // TODO ツイートエリアの作成
+        // ツイートエリアの作成
         removeAllChildren(tweetDivided);
         const anchor = document.createElement('a');
         const hrefValue = 'https://twitter.com/intent/tweet?button_hashtag='
@@ -40,19 +41,12 @@
         anchor.setAttribute('href', hrefValue);
         anchor.className = 'twitter-hashtag-button';
         anchor.setAttribute('data-text', result);
-        anchor.setAttribute('data-lang', 'ja');
-        anchor.setAttribute('data-show-count', 'false');
         anchor.innerText = '#あなたのいいところ をツイートする';
         tweetDivided.appendChild(anchor);
 
         twttr.widgets.load();
     };
-    userNameInput.onkeydown = (event) => {
-        if (event.keyCode === 13) {
-            //TODO ボタンのoncilck()処理を呼び出す
-            assessmentButton.onclick();
-        }
-    };
+
     const answers = [
         '{userName}のいいところは声です。{userName}の特徴的な声はみなを惹きつけ、心に残ります。',
         '{userName}のいいところはまなざしです。{userName}に見つめられた人は、気になって仕方がないでしょう。',
@@ -70,28 +64,27 @@
         '{userName}のいいところは気配りです。{userName}の配慮が多くの人を救っています。',
         '{userName}のいいところはその全てです。ありのままの{userName}自身がいいところなのです。',
         '{userName}のいいところは自制心です。やばいと思ったときにしっかりと衝動を抑えられる{userName}が皆から評価されています。'
-        '{userName}のいいところは優しさです。{userName}の優しい雰囲気や立ち振舞に多くの人が癒やされています。'
-    ]
-/**
- * 名前の文字列を渡すと診断結果を返す関数
- * @param {string} username ユーザーの名前
- * @returns {string} 診断結果
- */
-function assessment(userName) {
-    //全文字のコード番号を取得してそれを足し合わせる
-    let sumOfcharCode = 0;
-    for (let i = 0; i < userName.length; i++) {
-        sumOfcharCode = sumOfcharCode + userName.charCodeAt(i);
+    ];
+
+    /**
+    * 名前の文字列を渡すと診断結果を返す関数
+    * @param {string} userName ユーザーの名前
+    * @return {string} 診断結果
+    */
+    function assessment(userName) {
+        // 全文字のコード番号を取得してそれを足し合わせる
+        let sumOfcharCode = 0;
+        for (let i = 0; i < userName.length; i++) {
+            sumOfcharCode = sumOfcharCode + userName.charCodeAt(i);
+        }
+
+        // 文字のコード番号の合計を回答の数で割って添字の数値を求める
+        const index = sumOfcharCode % answers.length;
+        let result = answers[index];
+
+        result = result.replace(/{userName}/g, userName);
+        return result;
     }
-
-    //文字のコード番号の合計を診断結果の数で割って添字の数値を求める
-    const index = sumOfcharCode % answers.length;
-    let result = answers[index];
-    result = result.replace(/\{userName\}/g, userName);
-
-    //TODO {username}をユーザーの名前に置き換える
-    return result;
-}
 
     // テストコード
     console.assert(
